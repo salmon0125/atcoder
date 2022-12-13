@@ -141,7 +141,7 @@ class Solver {
 
     public static void solve() {
 
-    }
+     }
 
     public static int ceilDiv(int a,int b){
         if(a%b == 0){
@@ -150,18 +150,56 @@ class Solver {
             return a/b + 1;
         }
     }
-
+    public static int abs(int a){
+        return Math.abs(a);
+    }
 
     public static int max(int a,int b){
         return Math.max(a,b);
     }
 
-    public static int abs(int a){
-        return Math.abs(a);
+    public static int max(int... a){
+        int max = ninf;
+        for (int i = 0; i < a.length; i++) {
+            max = max(a[i],max);
+        }
+        return max;
+    }
+
+    public static long max(long a,long b){
+        return Math.max(a,b);
+    }
+
+    public static long max(long... a){
+        long max = Long.MAX_VALUE;
+        for (int i = 0; i < a.length; i++) {
+            max = max(a[i],max);
+        }
+        return max;
     }
 
     public static int min(int a,int b){
         return Math.min(a,b);
+    }
+
+    public static int min(int... a){
+        int min = inf;
+        for (int i = 0; i < a.length; i++) {
+            min = min(a[i],min);
+        }
+        return min;
+    }
+
+    public static long min(long a,long b){
+        return Math.max(a, b);
+    }
+
+    public static long min(long... a){
+        long min = inf;
+        for (int i = 0; i < a.length; i++) {
+            min = min(a[i],min);
+        }
+        return min;
     }
 
     public static final class MC {
