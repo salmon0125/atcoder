@@ -132,8 +132,8 @@ class Solver {
     public static final int MOD1 = 1000000007;
     public static final int MOD2 = 998244353;
     public static Scanner sc = new Scanner(System.in);
-    public static final int inf = Integer.MAX_VALUE;
-    public static final int ninf = Integer.MIN_VALUE;
+    public static final int inf = 2000000000;
+    public static final int ninf = -inf;
     public static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toUpperCase().toCharArray();
     public static FastScanner fs = new FastScanner();
     public static PrintWriter out;
@@ -191,7 +191,7 @@ class Solver {
     }
 
     public static long min(long a,long b){
-        return Math.max(a, b);
+        return Math.min(a, b);
     }
 
     public static long min(long... a){
