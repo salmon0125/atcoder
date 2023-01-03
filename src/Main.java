@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -8,10 +7,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        PrintWriter out =  new PrintWriter(System.out);
-        Solver.out = out;
-        Solver.solve();
-        out.flush();
+        Solver.SOLVE();
     }
 }
 
@@ -47,7 +43,7 @@ class UnionFind {
     }
 }
 
-class PairL{
+class PairL implements Comparable<PairL>, Comparator<PairL> {
     public long x,y;
 
     public PairL(long x,long y) {
@@ -55,9 +51,45 @@ class PairL{
         this.y = y;
     }
 
+    public void swap(){
+        long t = x;
+        x = y;
+        y = t;
+    }
+
+    @Override
+    public int compare(PairL o1, PairL o2) {
+        return o1.compareTo(o2);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PairL pairl = (PairL) o;
+        return x == pairl.x && y == pairl.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+
+
+
+    public PairL add(PairL p){
+        return new PairL(x+p.x,y+p.y);
+    }
+
+
+    @Override
+    public int compareTo(PairL o) {
+        return Long.compare(x,o.x);
+    }
 }
 
-class PairI implements Comparable<PairI> {
+class PairI implements Comparable<PairI>, Comparator<PairI> {
     public int x,y;
 
     public PairI(int x,int y) {
@@ -69,6 +101,11 @@ class PairI implements Comparable<PairI> {
         int t = x;
         x = y;
         y = t;
+    }
+
+    @Override
+    public int compare(PairI o1, PairI o2) {
+        return o1.compareTo(o2);
     }
 
     @Override
@@ -90,12 +127,29 @@ class PairI implements Comparable<PairI> {
         return Integer.compare(x,o.x);
     }
 
-    public int sum(){
-        return x+y;
+    public PairI add(PairI p){
+        return new PairI(x+p.x,y+p.y);
     }
 
-    public int sub(){
-        return x-y;
+    public PairI sub(PairI p){
+        return new PairI(x-p.x,y-p.y);
+    }
+}
+
+class Dist extends PairI{
+    int d;
+    public Dist(int x,int y,int d){
+        super(x,y);
+        this.d = d;
+    }
+
+    public Dist addG(PairI p,int h,int w) {
+        int x = this.x + p.x;
+        int y = this.y + p.y;
+        if(0 <= x&&x < w&&0 <= y&&y < h){
+            return new Dist(x,y,d+1);
+        }
+        return null;
     }
 }
 
@@ -127,6 +181,16 @@ class Three implements Comparable<Three>{
     }
 }
 
+class IB{
+    int i;
+    boolean b;
+    IB(int i,boolean b){
+        this.i = i;
+        this.b = b;
+    }
+}
+
+
 
 class Solver {
     public static final int MOD1 = 1000000007;
@@ -136,12 +200,21 @@ class Solver {
     public static final int ninf = -inf;
     public static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toUpperCase().toCharArray();
     public static FastScanner fs = new FastScanner();
-    public static PrintWriter out;
+    public static PrintWriter out = new PrintWriter(System.out);
+    public static final PairI[] move = new PairI[]{new PairI(1,0),new PairI(0,1),new PairI(-1,0),new PairI(0,-1)};
 
 
-    public static void solve() {
 
-     }
+    public static void solve(){
+
+    }
+
+    public static void reverse(int[] a){
+        int[] tmp = a.clone();
+        for (int i = 0; i < a.length; i++) {
+            a[i] = tmp[a.length - 1 - i];
+        }
+    }
 
     public static int ceilDiv(int a,int b){
         if(a%b == 0){
@@ -311,13 +384,31 @@ class Solver {
         else return gcd(b,a%b);
     }
 
-    public static int lcm(int a,int b){
-        return a / gcd(a,b) * b;
+    public static int gcd(int... a){
+        int ans = a[0];
+        for (int i = 1; i < a.length; i++) {
+            ans = gcd(ans,a[i]);
+        }
+        return ans;
+    }
+
+    public static long gcd(long... a){
+        long ans = a[0];
+        for (int i = 1; i < a.length; i++) {
+            ans = gcd(ans,a[i]);
+        }
+        return ans;
+    }
+
+    public static long lcm(int a,int b){
+        return (long) a / gcd(a, b) * b;
     }
 
     public static long lcm(long a,long b){
         return a / gcd(a,b) * b;
     }
+
+
 
     public static boolean isPrime(long x){
         if(x < 2) return false;
@@ -363,6 +454,16 @@ class Solver {
         return res;
     }
 
+    public static double rD(){
+        return fs.nextDouble();
+    }
+
+    public static double[] rDv(int length){
+        double[] res = new double[length];
+        for (int i = 0; i < length; i++) res[i] = rD();
+        return res;
+    }
+
     public static void oI(int a) {
         out.println(a);
     }
@@ -389,6 +490,14 @@ class Solver {
         for (int i = 0; i < a.length; i++) oL(a[i]);
     }
 
+    public static void oD(double d){
+        out.println(d);
+    }
+
+    public static void oDv(double[] d){
+        for(double i:d)oD(i);
+    }
+
     public static void yes_no(boolean yes){
         if(yes){
             oS("Yes");
@@ -397,15 +506,6 @@ class Solver {
         oS("No");
     }
 
-
-
-    public static long pow(int a, int b) {
-        long ans = 1;
-        for (int i = 0; i < b; i++) {
-            ans *= a;
-        }
-        return ans;
-    }
 
     public static int fact(int num) {
         if (num == 0) {
@@ -419,34 +519,30 @@ class Solver {
     }
 
 
-    public static int[] conVI(List<Integer> list) {
+    public static int[] conVI(ArrayList<Integer> list) {
         int[] res = new int[list.size()];
         for (int i = 0; i < list.size(); i++) res[i] = list.get(i);
         return res;
     }
 
-    public static String[] conVS(List<String> list) {
+    public static String[] conVS(ArrayList<String> list) {
         String[] res = new String[list.size()];
         for (int i = 0; i < list.size(); i++) res[i] = list.get(i);
         return res;
     }
 
-    public static List<Integer> conLI(int[] vec) {
-        List<Integer> list = new ArrayList<>();
+    public static ArrayList<Integer> conLI(int[] vec) {
+        ArrayList<Integer> list = new ArrayList<>();
         for (int i : vec) list.add(i);
         return list;
     }
 
-    public static List<String> conLS(String[] vec) {
-        List<String> list = new ArrayList<>();
-        for (String i : vec) list.add(i);
-        return list;
+    public static ArrayList<String> conLS(String[] vec) {
+        return new ArrayList<>(Arrays.asList(vec));
     }
 
-    static List<List<Integer>> zbzxzxv;
 
-    public static List<List<Integer>> permutation(int a) {
-        zbzxzxv = new ArrayList<>();
+    public static ArrayList<ArrayList<Integer>> permutation(int a) {
         int[] list = new int[a];
         for (int i = 0; i < a; i++) {
             list[i] = i;
@@ -454,17 +550,17 @@ class Solver {
         return permutation(list);
     }
 
-    private static List<List<Integer>> permutation(int[] seed) {
-        zbzxzxv = new ArrayList<>();
+    public static ArrayList<ArrayList<Integer>> permutation(int[] seed) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
         int[] perm = new int[seed.length];
         boolean[] used = new boolean[seed.length];
-        buildPerm(seed, perm, used, 0);
-        return zbzxzxv;
+        buildPerm(seed, perm, used, 0,res);
+        return res;
     }
 
-    private static void buildPerm(int[] seed, int[] perm, boolean[] used, int index) {
+    private static void buildPerm(int[] seed, int[] perm, boolean[] used, int index,ArrayList<ArrayList<Integer>> res) {
         if (index == seed.length) {
-            zbzxzxv.add(conLI(perm));
+            res.add(conLI(perm));
             return;
         }
 
@@ -473,9 +569,26 @@ class Solver {
                 continue;
             perm[index] = seed[i];
             used[i] = true;
-            buildPerm(seed, perm, used, index + 1);
+            buildPerm(seed, perm, used, index + 1,res);
             used[i] = false;
         }
+    }
+
+    public static void swap(int[] a,int i1,int i2){
+        int t = a[i1];
+        a[i1] = a[i2];
+        a[i2] = a[t];
+    }
+
+    public static void swap(char[] a,int i1,int i2){
+        char t = a[i1];
+        a[i1] = a[i2];
+        a[i2] = a[t];
+    }
+
+    public static void SOLVE(){
+        solve();
+        out.flush();
     }
 }
 
@@ -543,4 +656,6 @@ class FastScanner {
         return (int) nl;
     }
     public double nextDouble() { return Double.parseDouble(next());}
+
+
 }
