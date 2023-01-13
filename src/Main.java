@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -40,6 +41,77 @@ class UnionFind {
         int rx = root(x);
         int ry = root(y);
         return rx == ry;
+    }
+}
+
+class DSU {
+    private int n;
+    private int[] parentOrSize;
+
+    public DSU(int n) {
+        this.n = n;
+        this.parentOrSize = new int[n];
+        java.util.Arrays.fill(parentOrSize, -1);
+    }
+
+    int merge(int a, int b) {
+        if (!(0 <= a && a < n))
+            throw new IndexOutOfBoundsException("a=" + a);
+        if (!(0 <= b && b < n))
+            throw new IndexOutOfBoundsException("b=" + b);
+
+        int x = leader(a);
+        int y = leader(b);
+        if (x == y) return x;
+        if (-parentOrSize[x] < -parentOrSize[y]) {
+            int tmp = x;
+            x = y;
+            y = tmp;
+        }
+        parentOrSize[x] += parentOrSize[y];
+        parentOrSize[y] = x;
+        return x;
+    }
+
+    boolean same(int a, int b) {
+        if (!(0 <= a && a < n))
+            throw new IndexOutOfBoundsException("a=" + a);
+        if (!(0 <= b && b < n))
+            throw new IndexOutOfBoundsException("b=" + b);
+        return leader(a) == leader(b);
+    }
+
+    int leader(int a) {
+        if (parentOrSize[a] < 0) {
+            return a;
+        } else {
+            parentOrSize[a] = leader(parentOrSize[a]);
+            return parentOrSize[a];
+        }
+    }
+
+    int size(int a) {
+        if (!(0 <= a && a < n))
+            throw new IndexOutOfBoundsException("" + a);
+        return -parentOrSize[leader(a)];
+    }
+
+    ArrayList<ArrayList<Integer>> groups() {
+        int[] leaderBuf = new int[n];
+        int[] groupSize = new int[n];
+        for (int i = 0; i < n; i++) {
+            leaderBuf[i] = leader(i);
+            groupSize[leaderBuf[i]]++;
+        }
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            result.add(new ArrayList<>(groupSize[i]));
+        }
+        for (int i = 0; i < n; i++) {
+            result.get(leaderBuf[i]).add(i);
+        }
+        result.removeIf(ArrayList::isEmpty);
+        return result;
     }
 }
 
@@ -134,6 +206,15 @@ class PairI implements Comparable<PairI>, Comparator<PairI> {
     public PairI sub(PairI p){
         return new PairI(x-p.x,y-p.y);
     }
+
+    public PairI addG(PairI p,int h,int w) {
+        int x = this.x + p.x;
+        int y = this.y + p.y;
+        if(0 <= x&&x < w&&0 <= y&&y < h){
+            return new PairI(x,y);
+        }
+        return null;
+    }
 }
 
 class Dist extends PairI{
@@ -190,7 +271,38 @@ class IB{
     }
 }
 
+class CI{
+    char c;
+    int i;
+    CI(char c,int i){
+        this.c = c;
+        this.i = i;
+    }
+}
 
+
+class Pair<K,V>{
+    K k;
+    V v;
+    public Pair(K k,V v){
+        this.k = k;
+        this.v = v;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pair<?, ?> pair = (Pair<?, ?>) o;
+        return Objects.equals(k, pair.k) && Objects.equals(v, pair.v);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(k, v);
+    }
+
+}
 
 class Solver {
     public static final int MOD1 = 1000000007;
@@ -198,7 +310,8 @@ class Solver {
     public static Scanner sc = new Scanner(System.in);
     public static final int inf = 2000000000;
     public static final int ninf = -inf;
-    public static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toUpperCase().toCharArray();
+    public static final char[] alpha = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    public static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyz".toUpperCase().toCharArray();
     public static FastScanner fs = new FastScanner();
     public static PrintWriter out = new PrintWriter(System.out);
     public static final PairI[] move = new PairI[]{new PairI(1,0),new PairI(0,1),new PairI(-1,0),new PairI(0,-1)};
@@ -207,6 +320,15 @@ class Solver {
 
     public static void solve(){
 
+    }
+
+    public static int toInt(char c){
+            for (int i = 0; i < alpha.length; i++) {
+            if(c == alpha[i]){
+                return i+1;
+            }
+        }
+        throw new IllegalArgumentException("not an alphabet");
     }
 
     public static void reverse(int[] a){
@@ -224,6 +346,10 @@ class Solver {
         }
     }
     public static int abs(int a){
+        return Math.abs(a);
+    }
+
+    public static long abs(long a){
         return Math.abs(a);
     }
 
